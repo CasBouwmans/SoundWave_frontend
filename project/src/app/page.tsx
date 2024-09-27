@@ -17,6 +17,8 @@ const App = () => {
     const [artists, setArtists] = useState<SpotifyArtist[]>([])
     const [selectedArtist, setSelectedArtist] = useState<SpotifyArtist | null>(null);
     const [albums, setAlbums] = useState([]); // Hier kun je ook een type voor albums toevoegen
+    const [selectedAlbum, setSelectedAlbum] = useState<SpotifyAlbum | null>(null);
+    const [tracks, setTracks] = useState([]);
 
     interface SpotifyArtist {
         external_urls: {
@@ -87,8 +89,11 @@ const App = () => {
 
         console.log(data);
         setArtists(data.artists.items);
+        setAlbums([]);                  
+        setTracks([]);                  
+        setSelectedArtist(null);     
+        setSelectedAlbum(null);  
     }
-
     const fetchAlbums = async (artistId: string) => {
         const { data } = await axios.get(`https://api.spotify.com/v1/artists/${artistId}/albums`, {
             headers: {
@@ -102,10 +107,31 @@ const App = () => {
         console.log(data)
         setAlbums(data.items);
     };
+    const fetchAlbumTracks = async (albumId: string) => {
+        try {
+            const { data } = await axios.get(`https://api.spotify.com/v1/albums/${albumId}/tracks`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setTracks(data.items);  // Sla de tracks op in de state
+            console.log(data)
+        } catch (error) {
+            console.error("Error fetching tracks: ", error);
+        }
+    };
 
     const ArtistClick = (artist: SpotifyArtist) => {
         setSelectedArtist(artist);
         fetchAlbums(artist.id);
+        setArtists([]);              
+        setTracks([]);                 
+        setSelectedAlbum(null);   
+    };
+    const AlbumClick = (album: SpotifyAlbum) => {
+        setSelectedAlbum(album);  // Zet het geselecteerde album
+        fetchAlbumTracks(album.id);  // Haal de tracks van het album op
+        setAlbums([]);  
     };
 
     const renderArtists = () => {
@@ -131,7 +157,7 @@ const App = () => {
     }
     const renderAlbums = () => {
         return albums.map((album: SpotifyAlbum) => (
-            <div key={album.id} className="mb-4 hover:bg-gray-800 p-2 rounded-md m-2">
+            <div key={album.id} className="mb-4 hover:bg-gray-800 p-2 rounded-md m-2" onClick={() => AlbumClick(album)}>
                 {album.images.length > 0 && (
                     <img
                         src={album.images[0].url}
@@ -150,6 +176,18 @@ const App = () => {
             </div>
         ));
     }
+    const renderTracks = () => {
+        return (
+            <div>
+                {tracks.map((track: any) => (
+                    <div key={track.id} className="track">
+                        <h3>{track.name}</h3>
+                        <p className="text-sm text-gray-500">{track.artists.map((artist: any) => artist.name).join(", ")}</p>
+                    </div>
+                ))}
+            </div>
+        );
+    };
 
     return (
         <div className="flex flex-col h-screen">
@@ -184,11 +222,16 @@ const App = () => {
                         </div>
                     ) : null}
                     {token && (
-                        <div className="flex flex-wrap justify-center bg-gray-900 rounded-lg m-5" style={{width: 600}}>
-                            {albums.length === 0 ? (
-                                renderArtists()  // Laat artiesten zien als er geen albums zijn
+                        <div className="flex flex-wrap justify-center bg-gray-900 rounded-lg m-5" style={{ width: 600 }}>
+                            {/* Toon tracks als er een album geselecteerd is */}
+                            {selectedAlbum ? (
+                                renderTracks()
+                            ) : selectedArtist ? (
+                                /* Toon albums als er een artiest geselecteerd is */
+                                renderAlbums()
                             ) : (
-                                renderAlbums()   // Laat albums zien als er albums zijn
+                                /* Toon artiesten als er geen artiest en geen album geselecteerd is */
+                                renderArtists()
                             )}
                         </div>
                     )}
