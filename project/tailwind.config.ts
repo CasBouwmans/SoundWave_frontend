@@ -34,9 +34,23 @@ const config: Config = {
           '800': '#2e2b3a',
           '900': '#1b1a24',
         },
+        cyan: {
+          '50':  '#f8f9fa',
+          '100': '#ebf0f9',
+          '200': '#d3dcf2',
+          '300': '#acb9df',
+          '400': '#8391c7',
+          '500': '#686db0',
+          '600': '#545294',
+          '700': '#403d72',
+          '800': '#2c2a4f',
+          '900': '#1a1a30',
+        },
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar-hide'),
+  ],
 };
 export default config;
