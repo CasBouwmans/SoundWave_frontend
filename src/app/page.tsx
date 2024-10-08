@@ -72,7 +72,7 @@ const App = () => {
                 },
             });
             const trackDetails = await Promise.all(
-                data.items.map(async (track: any) => {
+                data.items.map(async (track: SpotifyTrack) => {
                     const trackData = await axios.get(`https://api.spotify.com/v1/tracks/${track.id}`, {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -90,7 +90,7 @@ const App = () => {
 
     const ArtistClick = (artist: SpotifyArtist) => {
         setSelectedArtist(artist);
-        fetchAlbums(artist.id);
+        fetchAlbums(artist.id || "0")
         setArtists([]);              
         setTracks([]);                 
         setSelectedAlbum(null);   
@@ -157,7 +157,7 @@ const App = () => {
         return albums.map((album: SpotifyAlbum) => (
             <div key={album.id} className="mb-4 hover:bg-gray-800 p-2 rounded-md m-2 cursor-pointer" onClick={() => AlbumClick(album)}>
                 {album.images.length > 0 && (
-                    <img
+                    <Image
                         src={album.images[0].url}
                         alt={album.name}
                         width={100}
@@ -193,7 +193,7 @@ const App = () => {
                         <p className="text-lg m-2 mr-4 ml-4">{index + 1}</p>
                         <div className="mr-4">
                             <h3>{track.name}</h3>
-                            <p className="text-sm text-gray-500">{track.artists.map((artist: any) => artist.name).join(", ")}</p>
+                            <p className="text-sm text-gray-500">{track.artists.map((artist: SpotifyArtist) => artist.name).join(", ")}</p>
                         </div>
                         <div className="ml-auto">
                             <p className="text-sm text-gray-500">{formatDuration(track.duration_ms)}</p>

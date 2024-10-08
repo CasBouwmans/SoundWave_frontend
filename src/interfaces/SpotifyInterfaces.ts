@@ -1,23 +1,23 @@
 export interface SpotifyArtist {
-    external_urls: {
+    external_urls?: {
         spotify: string;
     };
-    followers: {
+    followers?: {
         href: string | null;
         total: number;
     };
-    genres: string[];
-    href: string;
-    id: string;
-    images: Array<{
+    genres?: string[];
+    href?: string;
+    id?: string;
+    images?: Array<{
         height: number;
         url: string;
         width: number;
     }>;
     name: string;
-    popularity: number;
-    type: "artist";
-    uri: string;
+    popularity?: number;
+    type?: "artist";
+    uri?: string;
 }
 
 export interface SpotifyAlbum {
