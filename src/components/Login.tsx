@@ -13,11 +13,13 @@ export default function Login(
     const REDIRECT_URI = "http://localhost:3000"
     const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
     const RESPONSE_TYPE = "token"
+    
     return (<div>
         {!token || token === "" ? (
-    <div className="flex flex-col items-center justify-center">
-        <h1 className="font-serif text-4xl mt-4">Welcome to SoundWave</h1>
-        <Image src={Logo} alt="Logo" className="" />                
+    <div className="flex flex-col items-center justify-center">        
+        <Image src={Logo} alt="Logo" className="" />     
+        <h1 className="font-bold text-4xl mt-2">Welcome to the streaming service SoundWave</h1>     
+        <h2 className="font-bold text-2xl m-4">Discover and enjoy new music</h2>      
         <a className="bg-blue-500 p-4 border-4 border-blue-600 bg-opacity-80 border-opacity-60 rounded-md" href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}>Login with Spotify</a>
     </div>
 ) : null}

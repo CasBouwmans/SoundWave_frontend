@@ -1,0 +1,38 @@
+/* YourComponent.module.css */
+
+.scrollContainer {
+    width: 600px;
+    max-height: 400px; /* Pas aan naar wens */
+    overflow-y: auto;
+
+    border-radius: 0.5rem; /* rounded-lg in Tailwind */
+    margin: 0.5rem; /* m-2 in Tailwind */
+}
+
+.scrollContainer::-webkit-scrollbar {
+    width: 8px; /* Breedte van de scrollbar */
+}
+
+.scrollContainer::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1); /* Achtergrond van de track */
+}
+
+.scrollContainer::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.6); /* Scroll thumb kleur */
+    border-radius: 10px; /* Maak de hoeken van de scrollbar rond */
+}
+
+.scrollContainer::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.8); /* Hover kleur */
+}
+
+/* Gradient om visueel aan te geven dat er meer inhoud is */
+.scrollIndicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 32px; /* Pas aan naar wens */
+    background: linear-gradient(to top, rgba(31, 41, 55, 1), rgba(31, 41, 55, 0));
+    pointer-events: none;
+}
