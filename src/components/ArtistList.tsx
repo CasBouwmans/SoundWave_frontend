@@ -30,7 +30,7 @@ const ArtistList: React.FC<ArtistListProps> = ({ artist, onClick }) => {
                     className="p-2 w-40 h-40 object-cover"
                 />
             )}
-            <h2 style={{ width: 165 }}>{artist.name}</h2>
+            <h2 className="text-center" style={{ width: 165 }}>{artist.name}</h2>
             <p className="text-sm text-gray-500">{artist.type}</p>
         </div>
     );

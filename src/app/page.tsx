@@ -44,6 +44,10 @@ const App = () => {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
+                params: {
+                    limit: 50,
+                    offset: 0,
+                },
             });
             setPlaylists(data.items);  // Sla de playlists op in de state
             console.log(data);
@@ -52,7 +56,6 @@ const App = () => {
         }
     };
     
-    // Pas de useEffect aan om playlists op te halen als de token aanwezig is
     useEffect(() => {
         const hash = window.location.hash;
         let token = window.localStorage.getItem("token");
@@ -77,14 +80,19 @@ const App = () => {
                 window.localStorage.setItem("token", token);
                 window.localStorage.setItem("tokenExpiry", expiryTime.toString());
                 window.location.hash = "";
-                setToken(token);
-                fetchPlaylists();  // Haal playlists op na inloggen
+                setToken(token);  // Stel token in na inloggen
             }
         } else if (token) {
-            setToken(token);
-            fetchPlaylists();  // Haal playlists op als de token aanwezig is
+            setToken(token);  // Stel token in als deze aanwezig is
         }
-    }, [selectedAlbum, selectedArtist]);
+    }, []);
+    
+    useEffect(() => {
+        if (token) {
+            fetchPlaylists();  // Haal playlists op als de token beschikbaar is
+        }
+    }, [token]);
+    
     
     // Renderfunctie voor playlists
     const renderPlaylists = () => {
@@ -358,7 +366,7 @@ const App = () => {
                         style={{ width: 440, minHeight: maxHeight, maxHeight: maxHeight }}
                     >
                         <h2 className="text-center text-white">Song Information</h2>
-                        {/* {renderPlaylists()} */}
+
                     </div>
                 )}
             </div>
@@ -375,16 +383,16 @@ const App = () => {
                             alt="Previous" 
                             width={32} 
                             height={32} 
-                            className="w-6 h-6 flex items-center justify-center"
+                            className="w-5 h-5 flex items-center justify-center"
                             />
                         </div>
-                        <div className="rounded-full bg-white cursor-pointer m-4 p-2 hover:scale-105"  onClick={isPlaying ? togglePlayPause : () => playTrack(currentTrack!, currentTrackIndex!)}>
+                        <div className="rounded-full bg-white cursor-pointer p-2 hover:scale-105"  onClick={isPlaying ? togglePlayPause : () => playTrack(currentTrack!, currentTrackIndex!)}>
                             <Image 
                             src={isPlaying ? Pause : Play} 
                             alt="VideoPlayer" 
                             width={32} 
                             height={32} 
-                            className="w-6 h-6 flex items-center justify-center"                           
+                            className="w-5 h-5 flex items-center justify-center"                           
                             />
                         </div>
                         <div className="absolute right-0 rounded-full bg-white cursor-pointer p-2 hover:scale-105" onClick={playNextTrack}>
@@ -393,7 +401,7 @@ const App = () => {
                             alt="Next" 
                             width={32} 
                             height={32} 
-                            className="w-6 h-6 flex items-center justify-center"                        
+                            className="w-5 h-5 flex items-center justify-center"                        
                             />
                         </div>
                     </div>
