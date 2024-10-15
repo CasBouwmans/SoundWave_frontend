@@ -32,7 +32,7 @@ const App = () => {
     const [isPlaying, setIsPlaying] = useState(false); // Voeg deze regel toe
     const [trackIsClicked, setTrackIsClicked] = useState(false);
     const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(-1); // -1 betekent dat er nog geen track is geselecteerd
-    const [selectedAlbumImage, setSelectedAlbumImage] = useState<string | null>(null);
+    
     const [maxHeight, setMaxHeight] = useState(610);
     const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>([]);
 
@@ -170,7 +170,6 @@ const App = () => {
     };
     const AlbumClick = (album: SpotifyAlbum) => {
         setSelectedAlbum(album);  // Zet het geselecteerde album
-        setSelectedAlbumImage(album.images[0]?.url || null);
         fetchAlbumTracks(album.id);  // Haal de tracks van het album op
         setAlbums([]);  
     };
