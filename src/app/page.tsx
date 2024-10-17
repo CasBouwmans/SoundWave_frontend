@@ -76,7 +76,7 @@ const App = () => {
                 },
             });
             const trackDetails = await Promise.all(
-                data.items.map(async (item: any) => {
+                data.items.map(async (item: { track: SpotifyTrack }) => {
                     const track = item.track;
                     const trackData = await axios.get(`https://api.spotify.com/v1/tracks/${track.id}`, {
                         headers: {
@@ -186,7 +186,7 @@ const App = () => {
                     >
                         <p className="text-lg m-2 mr-4 ml-4 text-gray-500">{index + 1}</p>
                         {track.album.images.length > 0 && (
-                            <img src={track.album.images[0].url} alt={`${track.name} album cover`} className="w-12 h-12 rounded mr-4" />
+                            <Image src={track.album.images[0].url} alt={`${track.name} album cover`} width={100} height={100}className="w-12 h-12 rounded mr-4" />
                         )}
                         <div className="mr-4">
                             <h3>{track.name}</h3>
@@ -397,7 +397,7 @@ const App = () => {
                         ${currentTrack && currentTrack.id === track.id ? 'bg-gray-800' : 'hover:bg-gray-800'}`} onClick={() => playTrack(track, index)}>
                         <p className="text-lg m-2 mr-4 ml-4 text-gray-500">{index + 1}</p>
                         {track.album.images.length > 0 && (
-                            <img src={track.album.images[0].url} alt={`${track.name} album cover`} className="w-12 h-12 rounded mr-4" />
+                            <Image src={track.album.images[0].url} alt={`${track.name} album cover`} width={100} height={100} className="w-12 h-12 rounded mr-4" />
                         )}
                         <div className="mr-4">
                             <h3>{track.name}</h3>
