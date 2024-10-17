@@ -34,6 +34,9 @@ export interface SpotifyTrack {
     artists: Array<{ name: string }>;
     duration_ms: number;
     preview_url?: string; // Voeg hier de preview_url toe
+    album: {
+      images: { url: string }[];
+  };
 }
 
 export interface SpotifyPlaylist {

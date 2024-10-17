@@ -35,9 +35,17 @@ const App = () => {
     
     const [maxHeight, setMaxHeight] = useState(610);
     const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>([]);
+    const [selectedPlaylist, setSelectedPlaylist] = useState<SpotifyPlaylist | null>(null);
+
 
 
     
+    const formatDuration = (durationMs: number) => {
+        const minutes = Math.floor(durationMs / 60000); // Omrekeningen van milliseconden naar minuten
+        const seconds = Math.floor((durationMs % 60000) / 1000); // De resterende seconden
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`; // Zorgt ervoor dat seconden altijd twee cijfers zijn
+    };    
+
     const fetchPlaylists = async () => {
         try {
             const { data } = await axios.get('https://api.spotify.com/v1/me/playlists', {
@@ -55,6 +63,35 @@ const App = () => {
             console.error("Error fetching playlists: ", error);
         }
     };
+
+    const fetchPlaylistTracks = async (playlistId: string) => {
+        try {
+            const { data } = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                params: {
+                    limit: 50,
+                    offset: 0,
+                },
+            });
+            const trackDetails = await Promise.all(
+                data.items.map(async (item: any) => {
+                    const track = item.track;
+                    const trackData = await axios.get(`https://api.spotify.com/v1/tracks/${track.id}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    return trackData.data; // De volledige trackgegevens met populariteit
+                })
+            );
+            setTracks(trackDetails);  // Sla de volledige trackdetails op in de state
+        } catch (error) {
+            console.error("Error fetching playlist tracks: ", error);
+        }
+    };
+    
     
     useEffect(() => {
         const hash = window.location.hash;
@@ -97,27 +134,97 @@ const App = () => {
     // Renderfunctie voor playlists
     const renderPlaylists = () => {
         return playlists.map((playlist: SpotifyPlaylist) => (
-            <div key={playlist.id} className="mb-4 hover:bg-gray-800 p-2 rounded-md m-2 cursor-pointer">
+            <div
+                key={playlist.id}
+                className="mb-4 hover:bg-gray-800 p-2 rounded-md m-2 cursor-pointer"
+                onClick={() => {
+                    setSelectedPlaylist(playlist); // Stel de geselecteerde playlist in
+                    fetchPlaylistTracks(playlist.id); // Haal de tracks op van de geselecteerde playlist
+                    setTracks([]); // Leeg de huidige tracks
+                    setSelectedArtist(null); // Reset de geselecteerde artiest
+                    setSelectedAlbum(null); // Reset de geselecteerde album
+                }}
+            >
                 {playlist.images.length > 0 && (
                     <Image
                         src={playlist.images[0].url}
                         alt={playlist.name}
                         width={100}
                         height={100}
-                        className="rounded-md w-40 h-40 object-cover"
+                        className="rounded-md w-28 h-28 object-cover"
                     />
                 )}
-                <h2 style={{ width: 165 }}>
-                    {playlist.name}
-                </h2>
-                <p className="text-sm text-gray-500">
-                    {playlist.owner.display_name}
-                </p>
+                <h2 style={{ width: 165 }}>{playlist.name}</h2>
+                <p className="text-sm text-gray-500">{playlist.owner.display_name}</p>
             </div>
         ));
     };
     
-
+    const renderPlaylistTracks = () => {
+        if (!selectedPlaylist) return null; // Controleer of er een playlist geselecteerd is
+    
+        return (
+            <div className="flex flex-col w-full">
+            <div className="flex items-center m-3"> {/* Flex-container voor afbeelding en naam */}
+                {selectedPlaylist.images.length > 0 && (
+                    <Image
+                        src={selectedPlaylist.images[0].url} // Gebruik de afbeelding van de geselecteerde playlist
+                        alt={selectedPlaylist.name}
+                        width={100} // Pas aan op basis van jouw wensen
+                        height={100} // Pas aan op basis van jouw wensen
+                        className="rounded-md mr-4 w-30 h-30" // Voeg wat marge rechts toe
+                    />
+                )}
+                <h2 className="text-2xl font-semibold">{selectedPlaylist.name}</h2>
+            </div>
+                {tracks.map((track: SpotifyTrack, index: number) => (
+                    <div
+                        key={track.id}
+                        className={`rounded-md m-2 flex items-center p-2 cursor-pointer 
+                        ${currentTrack && currentTrack.id === track.id ? 'bg-gray-800' : 'hover:bg-gray-800'}`}
+                        onClick={() => playTrack(track, index)}
+                    >
+                        <p className="text-lg m-2 mr-4 ml-4 text-gray-500">{index + 1}</p>
+                        {track.album.images.length > 0 && (
+                            <img src={track.album.images[0].url} alt={`${track.name} album cover`} className="w-12 h-12 rounded mr-4" />
+                        )}
+                        <div className="mr-4">
+                            <h3>{track.name}</h3>
+                            <p className="text-sm text-gray-500">{track.artists.map((artist: SpotifyArtist) => artist.name).join(", ")}</p>
+                        </div>
+                        <div className="ml-auto">
+                            <p className="text-sm text-gray-500">{formatDuration(track.duration_ms)}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+    
+    const renderCurrentTrack = () => {
+        if (!currentTrack) return null; // Controleer of er een huidige track is
+    
+        return (
+            <div className="flex items-center m-4">
+                {currentTrack.album.images.length > 0 && (
+                    <Image
+                        src={currentTrack.album.images[0].url} // Afbeelding van het album
+                        alt={`${currentTrack.name} album cover`} 
+                        width={100} // Pas aan naar wens
+                        height={100} // Pas aan naar wens
+                        className="rounded-md w-16 h-16 object-cover mr-4"
+                    />
+                )}
+                <div>
+                    <h3 className="text-md font-semibold">{currentTrack.name}</h3> {/* Naam van de track */}
+                    <p className="text-sm text-gray-500">
+                        {currentTrack.artists.map((artist) => artist.name).join(", ")} {/* Artiest(en) */}
+                    </p>
+                </div>
+            </div>
+        );
+    };
+    
   
 
     
@@ -262,13 +369,8 @@ const App = () => {
             </div>
         ));
     }
-    const renderTracks = () => {
+    const renderAlbumTracks = () => {
         if (!selectedAlbum) return null; // Controleer of er een album geselecteerd is
-        const formatDuration = (durationMs: number) => {
-            const minutes = Math.floor(durationMs / 60000);
-            const seconds = ((durationMs % 60000) / 1000).toFixed(0);
-            return `${minutes}:${seconds.padStart(2, '0')}`;  // Zorgt ervoor dat de seconden altijd twee cijfers zijn
-        };
 
         return (
             <div className="flex flex-col w-full">
@@ -293,7 +395,10 @@ const App = () => {
                 {tracks.map((track: SpotifyTrack, index: number) => (
                     <div key={track.id} className={`rounded-md m-2 flex items-center p-2 cursor-pointer 
                         ${currentTrack && currentTrack.id === track.id ? 'bg-gray-800' : 'hover:bg-gray-800'}`} onClick={() => playTrack(track, index)}>
-                        <p className="text-lg m-2 mr-4 ml-4">{index + 1}</p>
+                        <p className="text-lg m-2 mr-4 ml-4 text-gray-500">{index + 1}</p>
+                        {track.album.images.length > 0 && (
+                            <img src={track.album.images[0].url} alt={`${track.name} album cover`} className="w-12 h-12 rounded mr-4" />
+                        )}
                         <div className="mr-4">
                             <h3>{track.name}</h3>
                             <p className="text-sm text-gray-500">{track.artists.map((artist: SpotifyArtist) => artist.name).join(", ")}</p>
@@ -347,8 +452,10 @@ const App = () => {
                             style={{ width: 600, minHeight: maxHeight, maxHeight: maxHeight }}
                         >
                             {/* Toon tracks als er een album geselecteerd is */}
-                            {selectedAlbum ? (
-                                renderTracks()
+                            {selectedPlaylist ? (
+                                renderPlaylistTracks() 
+                            ) : selectedAlbum ? (
+                                renderAlbumTracks()
                             ) : selectedArtist ? (
                                 /* Toon albums als er een artiest geselecteerd is */
                                 renderAlbums()
@@ -374,38 +481,42 @@ const App = () => {
        
 
             {token && trackIsClicked && (
-                <div className="bg-gray-900 w-full h-24 fixed bottom-0 left-0 flex items-center justify-center">
-                    <div className="relative w-full max-w-[200px] flex items-center justify-center">
-                        <div className="absolute left-0 rounded-full bg-white cursor-pointer p-2 hover:scale-105" onClick={playPreviousTrack}>
-                            <Image 
-                            src={Previous} 
-                            alt="Previous" 
-                            width={32} 
-                            height={32} 
-                            className="w-5 h-5 flex items-center justify-center"
-                            />
-                        </div>
-                        <div className="rounded-full bg-white cursor-pointer p-2 hover:scale-105"  onClick={isPlaying ? togglePlayPause : () => playTrack(currentTrack!, currentTrackIndex!)}>
-                            <Image 
-                            src={isPlaying ? Pause : Play} 
-                            alt="VideoPlayer" 
-                            width={32} 
-                            height={32} 
-                            className="w-5 h-5 flex items-center justify-center"                           
-                            />
-                        </div>
-                        <div className="absolute right-0 rounded-full bg-white cursor-pointer p-2 hover:scale-105" onClick={playNextTrack}>
-                            <Image 
-                            src={Next} 
-                            alt="Next" 
-                            width={32} 
-                            height={32} 
-                            className="w-5 h-5 flex items-center justify-center"                        
-                            />
-                        </div>
-                    </div>
-                </div>
-            )}
+    <div className="bg-gray-900 w-full h-24 fixed bottom-0 left-0 flex items-center justify-between p-4">
+        {renderCurrentTrack()} {/* Roep de renderfunctie aan hier */}
+
+        {/* Control panel - absolute centered */}
+        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-4">
+            <div className="rounded-full bg-white cursor-pointer p-2 hover:scale-105" onClick={playPreviousTrack}>
+                <Image 
+                    src={Previous} 
+                    alt="Previous" 
+                    width={32} 
+                    height={32} 
+                    className="w-5 h-5" 
+                />
+            </div>
+            <div className="rounded-full bg-white cursor-pointer p-2 hover:scale-105" onClick={isPlaying ? togglePlayPause : () => playTrack(currentTrack!, currentTrackIndex!)}>
+                <Image 
+                    src={isPlaying ? Pause : Play} 
+                    alt="Play/Pause" 
+                    width={32} 
+                    height={32} 
+                    className="w-5 h-5" 
+                />
+            </div>
+            <div className="rounded-full bg-white cursor-pointer p-2 hover:scale-105" onClick={playNextTrack}>
+                <Image 
+                    src={Next} 
+                    alt="Next" 
+                    width={32} 
+                    height={32} 
+                    className="w-5 h-5" 
+                />
+            </div>
+        </div>
+    </div>
+)}
+
         </div>
     );
 }
