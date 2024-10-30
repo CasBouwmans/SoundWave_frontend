@@ -13,6 +13,7 @@ export default function Logout(
     const logout = () => {
     setToken("")
     window.localStorage.removeItem("token")
+    window.localStorage.removeItem("tokenExpiry")
 }
 return (<div>
 {token && (
