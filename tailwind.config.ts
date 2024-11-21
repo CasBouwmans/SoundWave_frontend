@@ -46,7 +46,23 @@ const config: Config = {
           '800': '#2c2a4f',
           '900': '#1a1a30',
         },
+    },
+    keyframes: {
+      pulse: {
+        '0%, 100%': {
+          transform: 'scale(1)',
+          opacity: '1',           // volledig zichtbaar
+        },
+        '50%': {
+          transform: 'scale(1.05)', 
+          opacity: '0.8',         // iets doorzichtiger (90% zichtbaarheid)
+        },
       },
+    },
+    animation: {
+      pulse: 'pulse 3s infinite ease-in-out',
+    },
+
     },
   },
   plugins: [

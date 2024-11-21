@@ -449,7 +449,7 @@ const App = () => {
                     {token && (
                         <div
                             className={`flex flex-wrap justify-center bg-gray-900 rounded-lg overflow-y-auto ${styles.scrollContainer}`}
-                            style={{ width: 600, minHeight: maxHeight, maxHeight: maxHeight }}
+                            style={{ maxHeight: maxHeight }}
                         >
                             {/* Toon tracks als er een album geselecteerd is */}
                             {selectedPlaylist ? (
