@@ -13,7 +13,7 @@ import Image from "next/image";
 import Login from "@/components/Login";
 import Logout from "@/components/Logout";
 import { SpotifyArtist, SpotifyAlbum, SpotifyTrack, SpotifyPlaylist } from '@/interfaces/SpotifyInterfaces'
-import SearchArtist from "@/components/SearchArtist";
+import SearchArtistAlbumTrack from "@/components/SearchArtistAlbumTrack";
 import ArtistList from "@/components/ArtistList";
 import styles from "@/components/ScrollBar.module.css";
 
@@ -498,7 +498,7 @@ const App = () => {
                 <Logout token={token} setToken={setToken}/>
             </div>
             <div className="absolute top-0 right-0 left-0 flex justify-center p-5">
-                <SearchArtist token={token} searchKey={searchKey} setSearchKey={setSearchKey} setAlbums={setAlbums} setArtists={setArtists} setTracks={setTracks} setSelectedArtist={setSelectedArtist} setSelectedAlbum={setSelectedAlbum} setSearchChoice={setSearchChoice} searchChoice={searchChoice}/>
+                <SearchArtistAlbumTrack token={token} searchKey={searchKey} setSearchKey={setSearchKey} setAlbums={setAlbums} setArtists={setArtists} setTracks={setTracks} setSelectedArtist={setSelectedArtist} setSelectedAlbum={setSelectedAlbum} setSearchChoice={setSearchChoice} searchChoice={searchChoice}/>
             </div>
             {!token && (
                 <div className="flex flex-col items-center justify-start mx-4">

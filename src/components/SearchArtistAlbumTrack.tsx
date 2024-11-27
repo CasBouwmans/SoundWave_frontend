@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SpotifyArtist, SpotifyAlbum, SpotifyTrack } from "@/interfaces/SpotifyInterfaces";
 
-interface SearchArtistProps {
+interface SearchArtistAlbumTrackProps {
   token: string;
   searchKey: string;
   searchChoice: "album" | "track" | "artist";
@@ -14,7 +14,7 @@ interface SearchArtistProps {
   setSearchChoice: (search: "album" | "track" | "artist") => void;
 }
 
-export default function SearchArtist({
+export default function SearchArtistAlbumTrack({
   token,
   searchKey,
   setSearchKey,
@@ -25,7 +25,7 @@ export default function SearchArtist({
   setSelectedAlbum,
   setSearchChoice,
   searchChoice, // State voor dropdown keuze
-}: SearchArtistProps) {
+}: SearchArtistAlbumTrackProps) {
 
   const fetchResults = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
