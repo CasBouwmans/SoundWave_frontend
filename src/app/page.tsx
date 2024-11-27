@@ -8,6 +8,7 @@ import Play from './Images/Play.png'
 import Pause from './Images/Pause.png'
 import Previous from './Images/Previous.png'
 import Next from './Images/Next.png'
+import Anonymous from './Images/Anonymous.png'
 import Image from "next/image";
 import Login from "@/components/Login";
 import Logout from "@/components/Logout";
@@ -22,6 +23,7 @@ const App = () => {
 
     const [token, setToken] = useState("")
     const [searchKey, setSearchKey] = useState("")
+    const [searchChoice, setSearchChoice] = useState<"artist" | "album" | "track">("artist");
     const [artists, setArtists] = useState<SpotifyArtist[]>([])
     const [selectedArtist, setSelectedArtist] = useState<SpotifyArtist | null>(null);
     const [albums, setAlbums] = useState<SpotifyAlbum[]>([]);
@@ -36,6 +38,7 @@ const App = () => {
     const [maxHeight, setMaxHeight] = useState(610);
     const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>([]);
     const [selectedPlaylist, setSelectedPlaylist] = useState<SpotifyPlaylist | null>(null);
+    
 
 
 
@@ -343,11 +346,80 @@ const App = () => {
     
     
 
-    const renderArtists = () => {
+    const renderSearchedArtists = () => {
         return artists.map((artist: SpotifyArtist) => (
             <ArtistList key={artist.id} artist={artist} onClick={ArtistClick} />
         ));
     }
+    const renderSearchedAlbums = () => {
+        return albums.map((album: SpotifyAlbum) => (
+            <div
+                key={album.id}
+                className="mb-4 hover:bg-gray-800 p-2 rounded-md m-2 cursor-pointer"
+                onClick={() => AlbumClick(album)}
+            >
+                {album.images && album.images.length > 0 ? (
+                    <Image
+                    src={album.images[0].url}
+                    alt={album.name}
+                    width={100}
+                    height={100}
+                    className="rounded-md w-40 h-40 object-cover"
+                />
+            ) : (
+                <Image
+                    src={Anonymous} 
+                    alt="No album image"
+                    width={100}
+                    height={100}
+                    className="p-2 w-40 h-40 object-cover"
+                />
+                )}
+                <h2 style={{ width: 165 }}>
+                    {album.name}
+                </h2>
+                <p className="text-sm text-gray-500">
+                    Released on: {album.release_date}
+                </p>
+            </div>
+        ));
+    };
+
+    const renderSearchedTracks = () => {
+    
+        return (
+            <div className="flex flex-col w-full">
+                {tracks.map((track: SpotifyTrack, index: number) => (
+                    <div
+                        key={track.id}
+                        className={`rounded-md m-2 flex items-center p-2 cursor-pointer 
+                            ${currentTrack && currentTrack.id === track.id ? 'bg-gray-800' : 'hover:bg-gray-800'}`}
+                        onClick={() => playTrack(track, index)}
+                    >
+                        <p className="text-lg m-2 mr-4 ml-4 text-gray-500">{index + 1}</p>
+                        {track.album.images.length > 0 && (
+                            <Image
+                                src={track.album.images[0].url}
+                                alt={`${track.name} album cover`}
+                                width={100}
+                                height={100}
+                                className="w-12 h-12 rounded mr-4"
+                            />
+                        )}
+                        <div className="mr-4">
+                            <h3>{track.name}</h3>
+                            <p className="text-sm text-gray-500">{track.artists.map((artist: SpotifyArtist) => artist.name).join(", ")}</p>
+                        </div>
+                        <div className="ml-auto">
+                            <p className="text-sm text-gray-500">{formatDuration(track.duration_ms)}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+    
+    
     const renderAlbums = () => {
         return albums.map((album: SpotifyAlbum) => (
             <div key={album.id} className="mb-4 hover:bg-gray-800 p-2 rounded-md m-2 cursor-pointer" onClick={() => AlbumClick(album)}>
@@ -426,7 +498,7 @@ const App = () => {
                 <Logout token={token} setToken={setToken}/>
             </div>
             <div className="absolute top-0 right-0 left-0 flex justify-center p-5">
-                <SearchArtist token={token} searchKey={searchKey} setSearchKey={setSearchKey} setAlbums={setAlbums} setArtists={setArtists} setTracks={setTracks} setSelectedArtist={setSelectedArtist} setSelectedAlbum={setSelectedAlbum}/>
+                <SearchArtist token={token} searchKey={searchKey} setSearchKey={setSearchKey} setAlbums={setAlbums} setArtists={setArtists} setTracks={setTracks} setSelectedArtist={setSelectedArtist} setSelectedAlbum={setSelectedAlbum} setSearchChoice={setSearchChoice} searchChoice={searchChoice}/>
             </div>
             {!token && (
                 <div className="flex flex-col items-center justify-start mx-4">
@@ -459,10 +531,17 @@ const App = () => {
                             ) : selectedArtist ? (
                                 /* Toon albums als er een artiest geselecteerd is */
                                 renderAlbums()
-                            ) : (
+                            ) : searchChoice === "artist" ? (
                                 /* Toon artiesten als er geen artiest en geen album geselecteerd is */
-                                renderArtists()
-                            )}
+                                renderSearchedArtists()
+                            ) : searchChoice === "album" ? (
+                                renderSearchedAlbums()
+                            ) : searchChoice === "track" ? (
+                                renderSearchedTracks()
+                            ) : (
+                                // Als er geen specifieke keuze is, toon iets anders of een fallback
+                                <div>No results found</div>
+                              )}
                         </div>
                     )}
                 </div>
