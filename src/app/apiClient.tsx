@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SpotifyTrack } from '@/interfaces/SpotifyInterfaces';  // Zorg ervoor dat je de juiste interface importeert
+import { SpotifyPlaylist, SpotifyTrack } from '@/interfaces/SpotifyInterfaces';  // Zorg ervoor dat je de juiste interface importeert
 
 
 // Maak een axios instantie aan
@@ -47,7 +47,7 @@ export const searchSpotify = async (
   }
 };
 
-export const fetchPlaylists = async (token: string): Promise<any[]> => {
+export const fetchPlaylists = async (token: string): Promise<SpotifyPlaylist[]> => {
     try {
         const response = await apiClient.get('me/playlists', {
             headers: {
