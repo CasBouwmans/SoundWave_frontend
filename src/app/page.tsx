@@ -17,7 +17,7 @@ import SearchArtistAlbumTrack from "@/components/SearchArtistAlbumTrack";
 import ArtistList from "@/components/ArtistList";
 import styles from "@/components/ScrollBar.module.css";
 
-import { fetchPlaylists, fetchPlaylistTracks } from './apiClient';
+import { fetchPlaylists, fetchPlaylistTracks, fetchAlbums, fetchAlbumTracks } from './apiClient';
 
 
 const App = () => {
@@ -108,6 +108,7 @@ const App = () => {
                 }
             };
             getPlaylists();
+            
         }
     }, [token]);
     
@@ -209,58 +210,31 @@ const App = () => {
   
 
     
-    
-
-    
-    const fetchAlbums = async (artistId: string) => {
-        const { data } = await axios.get(`https://api.spotify.com/v1/artists/${artistId}/albums`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            params: {
-                include_groups: "album,single",
-                market: "ES",
-            },
-        });
-        console.log(data)
-        setAlbums(data.items);
-    };
-    const fetchAlbumTracks = async (albumId: string) => {
-        try {
-            const { data } = await axios.get(`https://api.spotify.com/v1/albums/${albumId}/tracks`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const trackDetails = await Promise.all(
-                data.items.map(async (track: SpotifyTrack) => {
-                    const trackData = await axios.get(`https://api.spotify.com/v1/tracks/${track.id}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    return trackData.data;  // De volledige trackgegevens met populariteit
-                })
-            );
-            setTracks(trackDetails);  // Sla de volledige trackdetails op in de state
-            console.log(trackDetails);
-        } catch (error) {
-            console.error("Error fetching tracks: ", error);
-        }
-    };
-
-    const ArtistClick = (artist: SpotifyArtist) => {
+    const ArtistClick = async (artist: SpotifyArtist) => {
         setSelectedArtist(artist);
-        fetchAlbums(artist.id || "0")
         setArtists([]);              
         setTracks([]);                 
         setSelectedAlbum(null);   
+    
+        if (token) {
+            const albums = await fetchAlbums(artist.id || "0", token); // Wacht op de albums
+            setAlbums(albums); // Sla de opgehaalde albums op in de state
+        } else {
+            console.log("No valid token found");
+        }
     };
-    const AlbumClick = (album: SpotifyAlbum) => {
-        setSelectedAlbum(album);  // Zet het geselecteerde album
-        fetchAlbumTracks(album.id);  // Haal de tracks van het album op
-        setAlbums([]);  
+    const AlbumClick = async (album: SpotifyAlbum) => {
+        setSelectedAlbum(album); // Zet het geselecteerde album
+        setAlbums([]); // Maak de albums leeg
+    
+        if (token) { // Controleer of er een geldig token is
+            const tracks = await fetchAlbumTracks(album.id, token); // Haal tracks op via de apiClient functie
+            setTracks(tracks); // Update de state met de opgehaalde tracks
+        } else {
+            console.log("No valid token found");
+        }
     };
+    
 
     const playTrack = (track: SpotifyTrack, index: number) => {
     if (currentTrack && currentTrack.id === track.id) {

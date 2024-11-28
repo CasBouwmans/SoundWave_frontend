@@ -94,4 +94,53 @@ export const fetchPlaylists = async (token: string) => {
     }
   };
 
+  export const fetchAlbums = async (artistId: string, token: string) => {
+    try {
+        const { data } = await axios.get(`https://api.spotify.com/v1/artists/${artistId}/albums`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            params: {
+                include_groups: "album,single", // kan ook andere groepen zijn zoals "appears_on"
+                market: "ES", // dit kan je dynamisch maken als je wilt
+            },
+        });
+
+        console.log(data);  // Debug: zie wat je terugkrijgt van de API
+        return data.items;  // Hier geef je de albums terug zodat je ze later kunt gebruiken
+    } catch (error) {
+        console.error('Error fetching albums:', error);
+        // Hier kun je ook foutmelding tonen aan de gebruiker
+        return [];
+    }
+};
+
+export const fetchAlbumTracks = async (albumId: string, token: string) => {
+    try {
+        const { data } = await axios.get(`https://api.spotify.com/v1/albums/${albumId}/tracks`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        // Haal meer details op voor elk nummer
+        const trackDetails = await Promise.all(
+            data.items.map(async (track: SpotifyTrack) => {
+                const trackData = await axios.get(`https://api.spotify.com/v1/tracks/${track.id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                return trackData.data; // Volledige trackgegevens
+            })
+        );
+
+        console.log("Fetched tracks:", trackDetails); // Debug
+        return trackDetails; // Retourneer de volledige trackdetails
+    } catch (error) {
+        console.error("Error fetching tracks:", error);
+        return []; // Retourneer een lege array bij een fout
+    }
+};
+  
 export default apiClient;
