@@ -17,6 +17,8 @@ import SearchArtistAlbumTrack from "@/components/SearchArtistAlbumTrack";
 import ArtistList from "@/components/ArtistList";
 import styles from "@/components/ScrollBar.module.css";
 
+import { fetchPlaylists, fetchPlaylistTracks } from './apiClient';
+
 
 const App = () => {
     
@@ -49,51 +51,19 @@ const App = () => {
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`; // Zorgt ervoor dat seconden altijd twee cijfers zijn
     };    
 
-    const fetchPlaylists = async () => {
-        try {
-            const { data } = await axios.get('https://api.spotify.com/v1/me/playlists', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                params: {
-                    limit: 50,
-                    offset: 0,
-                },
-            });
-            setPlaylists(data.items);  // Sla de playlists op in de state
-            console.log(data);
-        } catch (error) {
-            console.error("Error fetching playlists: ", error);
-        }
-    };
+   
 
-    const fetchPlaylistTracks = async (playlistId: string) => {
-        try {
-            const { data } = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                params: {
-                    limit: 50,
-                    offset: 0,
-                },
+    const handlePlaylistClick = (playlistId: string) => {
+        if (token) {
+          fetchPlaylistTracks(token, playlistId)
+            .then((trackData) => {
+              setTracks(trackData); // Sla de tracks op in de state
+            })
+            .catch((error) => {
+              console.error("Error fetching playlist tracks: ", error);
             });
-            const trackDetails = await Promise.all(
-                data.items.map(async (item: { track: SpotifyTrack }) => {
-                    const track = item.track;
-                    const trackData = await axios.get(`https://api.spotify.com/v1/tracks/${track.id}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    return trackData.data; // De volledige trackgegevens met populariteit
-                })
-            );
-            setTracks(trackDetails);  // Sla de volledige trackdetails op in de state
-        } catch (error) {
-            console.error("Error fetching playlist tracks: ", error);
         }
-    };
+      };
     
     
     useEffect(() => {
@@ -129,7 +99,15 @@ const App = () => {
     
     useEffect(() => {
         if (token) {
-            fetchPlaylists();  // Haal playlists op als de token beschikbaar is
+            const getPlaylists = async () => {
+                try {
+                    const data = await fetchPlaylists(token);
+                    setPlaylists(data); // Sla de playlists op in de state
+                } catch (error) {
+                    console.error('Error fetching playlists:', error);
+                }
+            };
+            getPlaylists();
         }
     }, [token]);
     
@@ -142,7 +120,7 @@ const App = () => {
                 className="mb-4 hover:bg-gray-800 p-2 rounded-md m-2 cursor-pointer"
                 onClick={() => {
                     setSelectedPlaylist(playlist); // Stel de geselecteerde playlist in
-                    fetchPlaylistTracks(playlist.id); // Haal de tracks op van de geselecteerde playlist
+                    handlePlaylistClick(playlist.id); // Haal de tracks op van de geselecteerde playlist
                     setTracks([]); // Leeg de huidige tracks
                     setSelectedArtist(null); // Reset de geselecteerde artiest
                     setSelectedAlbum(null); // Reset de geselecteerde album

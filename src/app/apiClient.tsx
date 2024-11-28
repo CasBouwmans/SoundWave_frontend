@@ -47,54 +47,51 @@ export const searchSpotify = async (
   }
 };
 
-export const fetchPlaylists = async (token: string): Promise<SpotifyPlaylist[]> => {
+export const fetchPlaylists = async (token: string) => {
     try {
-        const response = await apiClient.get('me/playlists', {
-            headers: {
-                Authorization: `Bearer ${token}`, // Voeg de token toe aan de headers
-            },
-            params: {
-                limit: 50,
-                offset: 0,
-            },
-        });
-        return response.data.items;  // Return de playlists die je opvraagt
+      const { data } = await apiClient.get('/me/playlists', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          limit: 50,
+          offset: 0,
+        },
+      });
+      return data.items;  // Return the playlists data directly
     } catch (error) {
-        console.error("Error fetching playlists: ", error);
-        throw error; // Gooit de error door, zodat de aanroepende functie ermee kan omgaan
+      console.error("Error fetching playlists: ", error);
+      throw error;  // Rethrow the error to handle it elsewhere
     }
-};
+  };
 
-export const fetchPlaylistTracks = async (playlistId: string, token: string) => {
+  export const fetchPlaylistTracks = async (token: string, playlistId: string) => {
     try {
-        const { data } = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+      const { data } = await apiClient.get(`/playlists/${playlistId}/tracks`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          limit: 50,
+          offset: 0,
+        },
+      });
+      const trackDetails = await Promise.all(
+        data.items.map(async (item: { track: SpotifyTrack }) => {
+          const track = item.track;
+          const trackData = await apiClient.get(`/tracks/${track.id}`, {
             headers: {
-                Authorization: `Bearer ${token}`,  // Voeg het token toe aan de headers
+              Authorization: `Bearer ${token}`,
             },
-            params: {
-                limit: 50,
-                offset: 0,
-            },
-        });
-
-        // Haal voor elke track de gedetailleerde gegevens op
-        const trackDetails = await Promise.all(
-            data.items.map(async (item: { track: SpotifyTrack }) => {
-                const track = item.track;
-                const trackData = await axios.get(`https://api.spotify.com/v1/tracks/${track.id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                return trackData.data;  // Return de volledige trackgegevens
-            })
-        );
-
-        return trackDetails;  // Return de volledige trackdetails
+          });
+          return trackData.data; // Return full track details
+        })
+      );
+      return trackDetails;  // Return the tracks
     } catch (error) {
-        console.error("Error fetching playlist tracks: ", error);
-        throw error;  // Gooi de error door zodat de aanroepende functie ermee kan omgaan
+      console.error("Error fetching playlist tracks: ", error);
+      throw error;  // Rethrow the error to handle it elsewhere
     }
-};
+  };
 
 export default apiClient;
