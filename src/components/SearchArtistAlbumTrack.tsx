@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { SpotifyArtist, SpotifyAlbum, SpotifyTrack } from "@/interfaces/SpotifyInterfaces";
 import { searchSpotify } from "@/app/apiClient"; // Importeer de zoekfunctie uit je apiClient
 
