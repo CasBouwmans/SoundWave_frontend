@@ -1,5 +1,6 @@
-import axios from "axios";
+import React, { useState } from "react";
 import { SpotifyArtist, SpotifyAlbum, SpotifyTrack } from "@/interfaces/SpotifyInterfaces";
+import { searchSpotify } from "@/app/apiClient"; // Importeer de zoekfunctie uit je apiClient
 
 interface SearchArtistAlbumTrackProps {
   token: string;
@@ -14,7 +15,7 @@ interface SearchArtistAlbumTrackProps {
   setSearchChoice: (search: "album" | "track" | "artist") => void;
 }
 
-export default function SearchArtistAlbumTrack({
+const SearchArtistAlbumTrack = ({
   token,
   searchKey,
   setSearchKey,
@@ -24,8 +25,8 @@ export default function SearchArtistAlbumTrack({
   setSelectedArtist,
   setSelectedAlbum,
   setSearchChoice,
-  searchChoice, // State voor dropdown keuze
-}: SearchArtistAlbumTrackProps) {
+  searchChoice,
+}: SearchArtistAlbumTrackProps) => {
 
   const fetchResults = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,17 +39,7 @@ export default function SearchArtistAlbumTrack({
     setSelectedAlbum(null);
 
     try {
-      const { data } = await axios.get("https://api.spotify.com/v1/search", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
-          q: searchKey,
-          type: searchChoice, // Gebruik de waarde van de dropdown
-        },
-      });
-
-      console.log(data);
+      const data = await searchSpotify(token, searchKey, searchChoice); // Roep de functie uit apiClient aan
 
       // Update de state op basis van de keuze
       if (searchChoice === "artist") {
@@ -94,4 +85,6 @@ export default function SearchArtistAlbumTrack({
       )}
     </div>
   );
-}
+};
+
+export default SearchArtistAlbumTrack;

@@ -138,7 +138,7 @@ const App = () => {
     const renderPlaylists = () => {
         return playlists.map((playlist: SpotifyPlaylist) => (
             <div
-                key={playlist.id}
+                key={playlist?.id}
                 className="mb-4 hover:bg-gray-800 p-2 rounded-md m-2 cursor-pointer"
                 onClick={() => {
                     setSelectedPlaylist(playlist); // Stel de geselecteerde playlist in
@@ -147,18 +147,18 @@ const App = () => {
                     setSelectedArtist(null); // Reset de geselecteerde artiest
                     setSelectedAlbum(null); // Reset de geselecteerde album
                 }}
-            >
-                {playlist.images.length > 0 && (
+            >   
+                {playlist && playlist.images && playlist.images.length > 0 && (
                     <Image
-                        src={playlist.images[0].url}
+                        src={playlist.images[0].url} 
                         alt={playlist.name}
                         width={100}
                         height={100}
                         className="rounded-md w-28 h-28 object-cover"
                     />
                 )}
-                <h2 style={{ width: 165 }}>{playlist.name}</h2>
-                <p className="text-sm text-gray-500">{playlist.owner.display_name}</p>
+                <h2 style={{ width: 165 }}>{playlist?.name || "Unknown Playlist"}</h2>
+                <p className="text-sm text-gray-500">{playlist?.owner?.display_name || "Unknown Owner"}</p>
             </div>
         ));
     };
