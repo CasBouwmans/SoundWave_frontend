@@ -2,7 +2,6 @@
 
 import React from "react";
 import { useState, useEffect } from "react";   
-import axios from "axios";
 import Logo from './Images/Logo.png';
 import Play from './Images/Play.png'
 import Pause from './Images/Pause.png'

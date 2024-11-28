@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SpotifyPlaylist, SpotifyTrack } from '@/interfaces/SpotifyInterfaces';  // Zorg ervoor dat je de juiste interface importeert
+import { SpotifyTrack } from '@/interfaces/SpotifyInterfaces';  // Zorg ervoor dat je de juiste interface importeert
 
 
 // Maak een axios instantie aan
