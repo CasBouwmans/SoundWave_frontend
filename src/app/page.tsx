@@ -448,7 +448,7 @@ const App = () => {
                         className={`flex flex-col bg-gray-900 rounded-lg overflow-y-auto ${styles.scrollContainer}`}
                         style={{ width: 440, minHeight: maxHeight, maxHeight: maxHeight }}
                     >
-                        <h2 className="text-center text-white">Playlists</h2>
+                        <h2 className="text-center text-white text-2xl font-semibold m-3">Playlists</h2>
                         {renderPlaylists()}
                     </div>
                 )}
@@ -486,7 +486,7 @@ const App = () => {
                         className={`flex flex-col bg-gray-900 rounded-lg overflow-y-auto ${styles.scrollContainer}`}
                         style={{ width: 440, minHeight: maxHeight, maxHeight: maxHeight }}
                     >
-                        <h2 className="text-center text-white">Song Information</h2>
+                        <h2 className="text-center text-white text-2xl font-semibold m-3">Song Information</h2>
 
                     </div>
                 )}
