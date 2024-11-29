@@ -236,60 +236,42 @@ const App = () => {
     
 
     const playTrack = (track: SpotifyTrack, index: number) => {
-    if (currentTrack && currentTrack.id === track.id) {
-        togglePlayPause();
-        
-        return;
-    }
-
-    if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-    }
-
-    if (track.preview_url) {
-        const newAudio = new Audio(track.preview_url);
-        newAudio.play();
+        if (currentTrack && currentTrack.id === track.id) {
+            togglePlayPause();
+            return;
+        }
+    
+        // Alleen de metadata bijwerken en de rest behouden
         setCurrentTrack(track);
         setCurrentTrackIndex(index); // Stel de huidige track index in
-        setAudio(newAudio);
-        setIsPlaying(true);
+        setIsPlaying(false); // Zorg dat het standaard niet speelt
         setTrackIsClicked(true);
         setMaxHeight(520);
-
-        newAudio.addEventListener('ended', () => {
-            setIsPlaying(false);
-        });
-    } else {
-        alert("No preview available for this track.");
-    }
-};
-
     
-    // Functie om afspelen/pauzeren om te schakelen
-    const togglePlayPause = () => {
-        if (audio) {
-            if (isPlaying) {
-                audio.pause(); // Pauzeer de huidige audio
-                setIsPlaying(false); // Zet isPlaying op false
-            } else {
-                audio.play(); // Speel de huidige audio af
-                setIsPlaying(true); // Zet isPlaying op true
+        setTimeout(() => {
+            if (!track.preview_url) {
+                alert("No preview available for this track.");
             }
-        }
+        }, 0);
     };
+    
+    // Functie om afspelen/pauzeren om te schakelen (niet meer gebruikt)
+    const togglePlayPause = () => {
+        // Geen functionaliteit meer nodig omdat audio niet wordt afgespeeld
+        console.log("Play/pause toggled, but no audio functionality remains.");
+    };
+    
     const playPreviousTrack = () => {
         if (currentTrackIndex !== null && currentTrackIndex > 0) {
             const previousTrack = tracks[currentTrackIndex - 1];
-            playTrack(previousTrack, currentTrackIndex - 1); // Speel de vorige track af
+            playTrack(previousTrack, currentTrackIndex - 1); // Ga naar de vorige track
         }
     };
     
-    // Functie om de volgende track af te spelen
     const playNextTrack = () => {
         if (currentTrackIndex !== null && currentTrackIndex < tracks.length - 1) {
             const nextTrack = tracks[currentTrackIndex + 1];
-            playTrack(nextTrack, currentTrackIndex + 1); // Speel de volgende track af
+            playTrack(nextTrack, currentTrackIndex + 1); // Ga naar de volgende track
         }
     };
     
