@@ -39,6 +39,7 @@ const App = () => {
     const [maxHeight, setMaxHeight] = useState(610);
     const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>([]);
     const [selectedPlaylist, setSelectedPlaylist] = useState<SpotifyPlaylist | null>(null);
+    const [searchActive, setSearchActive] = useState(false);
     
 
 
@@ -124,6 +125,8 @@ const App = () => {
                     setTracks([]); // Leeg de huidige tracks
                     setSelectedArtist(null); // Reset de geselecteerde artiest
                     setSelectedAlbum(null); // Reset de geselecteerde album
+                    setSearchActive(false); // Reset de geselecteer
+
                 }}
             >   
                 {playlist && playlist.images && playlist.images.length > 0 && (
@@ -431,7 +434,7 @@ const App = () => {
                 <Logout token={token} setToken={setToken}/>
             </div>
             <div className="absolute top-0 right-0 left-0 flex justify-center p-5">
-                <SearchArtistAlbumTrack token={token} searchKey={searchKey} setSearchKey={setSearchKey} setAlbums={setAlbums} setArtists={setArtists} setTracks={setTracks} setSelectedArtist={setSelectedArtist} setSelectedAlbum={setSelectedAlbum} setSearchChoice={setSearchChoice} searchChoice={searchChoice}/>
+                <SearchArtistAlbumTrack token={token} searchKey={searchKey} setSearchKey={setSearchKey} setAlbums={setAlbums} setArtists={setArtists} setTracks={setTracks} setSelectedArtist={setSelectedArtist} setSelectedAlbum={setSelectedAlbum} setSearchChoice={setSearchChoice} searchChoice={searchChoice} searchActive={searchActive} setSearchActive={setSearchActive}/>
             </div>
             {!token && (
                 <div className="flex flex-col items-center justify-start mx-4">
@@ -457,7 +460,7 @@ const App = () => {
                             style={{ maxHeight: maxHeight }}
                         >
                             {/* Toon tracks als er een album geselecteerd is */}
-                            {selectedPlaylist ? (
+                            {selectedPlaylist && !searchActive ? (
                                 renderPlaylistTracks() 
                             ) : selectedAlbum ? (
                                 renderAlbumTracks()

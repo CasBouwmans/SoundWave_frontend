@@ -5,6 +5,7 @@ interface SearchArtistAlbumTrackProps {
   token: string;
   searchKey: string;
   searchChoice: "album" | "track" | "artist";
+  searchActive: boolean;
   setSearchKey: (key: string) => void;
   setAlbums: (albums: SpotifyAlbum[]) => void;
   setArtists: (artists: SpotifyArtist[]) => void;
@@ -12,11 +13,14 @@ interface SearchArtistAlbumTrackProps {
   setSelectedArtist: (artist: SpotifyArtist | null) => void;
   setSelectedAlbum: (album: SpotifyAlbum | null) => void;
   setSearchChoice: (search: "album" | "track" | "artist") => void;
+  setSearchActive: (searchActive: boolean) => void;
 }
 
 const SearchArtistAlbumTrack = ({
   token,
   searchKey,
+  searchChoice,
+  searchActive,
   setSearchKey,
   setAlbums,
   setArtists,
@@ -24,7 +28,8 @@ const SearchArtistAlbumTrack = ({
   setSelectedArtist,
   setSelectedAlbum,
   setSearchChoice,
-  searchChoice,
+  
+  setSearchActive,
 }: SearchArtistAlbumTrackProps) => {
 
   const fetchResults = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -36,6 +41,7 @@ const SearchArtistAlbumTrack = ({
     setTracks([]);
     setSelectedArtist(null);
     setSelectedAlbum(null);
+    setSearchActive(true);
 
     try {
       const data = await searchSpotify(token, searchKey, searchChoice); // Roep de functie uit apiClient aan
