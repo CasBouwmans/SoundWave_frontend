@@ -31,7 +31,7 @@ const App = () => {
     const [selectedAlbum, setSelectedAlbum] = useState<SpotifyAlbum | null>(null);
     const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
     const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null>(null);
-    const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+    // const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false); // Voeg deze regel toe
     const [trackIsClicked, setTrackIsClicked] = useState(false);
     const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(-1); // -1 betekent dat er nog geen track is geselecteerd
@@ -434,7 +434,7 @@ const App = () => {
                 <Logout token={token} setToken={setToken}/>
             </div>
             <div className="absolute top-0 right-0 left-0 flex justify-center p-5">
-                <SearchArtistAlbumTrack token={token} searchKey={searchKey} setSearchKey={setSearchKey} setAlbums={setAlbums} setArtists={setArtists} setTracks={setTracks} setSelectedArtist={setSelectedArtist} setSelectedAlbum={setSelectedAlbum} setSearchChoice={setSearchChoice} searchChoice={searchChoice} searchActive={searchActive} setSearchActive={setSearchActive}/>
+                <SearchArtistAlbumTrack token={token} searchKey={searchKey} setSearchKey={setSearchKey} setAlbums={setAlbums} setArtists={setArtists} setTracks={setTracks} setSelectedArtist={setSelectedArtist} setSelectedAlbum={setSelectedAlbum} setSearchChoice={setSearchChoice} searchChoice={searchChoice} setSearchActive={setSearchActive}/>
             </div>
             {!token && (
                 <div className="flex flex-col items-center justify-start mx-4">

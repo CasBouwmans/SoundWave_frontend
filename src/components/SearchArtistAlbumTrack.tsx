@@ -5,7 +5,6 @@ interface SearchArtistAlbumTrackProps {
   token: string;
   searchKey: string;
   searchChoice: "album" | "track" | "artist";
-  searchActive: boolean;
   setSearchKey: (key: string) => void;
   setAlbums: (albums: SpotifyAlbum[]) => void;
   setArtists: (artists: SpotifyArtist[]) => void;
@@ -20,7 +19,6 @@ const SearchArtistAlbumTrack = ({
   token,
   searchKey,
   searchChoice,
-  searchActive,
   setSearchKey,
   setAlbums,
   setArtists,
