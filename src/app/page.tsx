@@ -41,9 +41,6 @@ const App = () => {
     const [selectedPlaylist, setSelectedPlaylist] = useState<SpotifyPlaylist | null>(null);
     const [searchActive, setSearchActive] = useState(false);
 
-    const [review, setReview] = useState<string>("");
-    const [newReview, setNewReview] = useState("");
-    const [selectedTrackId, setSelectedTrackId] = useState<number | null>(null);
     
 
     
