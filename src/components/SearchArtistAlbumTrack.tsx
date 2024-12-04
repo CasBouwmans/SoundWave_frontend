@@ -65,7 +65,7 @@ const SearchArtistAlbumTrack = ({
             type="text"
             onChange={(e) => setSearchKey(e.target.value)}
             className="text-white bg-gray-900 rounded-l-full hover:bg-gray-800 p-2 w-96 outline-none focus:ring-2 focus:ring-gray-500"
-            placeholder="Enter artist, album, or track name"
+            placeholder={`Enter ${searchChoice} name`}
           />
           <button
             type="submit"

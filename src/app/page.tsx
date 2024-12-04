@@ -40,9 +40,13 @@ const App = () => {
     const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>([]);
     const [selectedPlaylist, setSelectedPlaylist] = useState<SpotifyPlaylist | null>(null);
     const [searchActive, setSearchActive] = useState(false);
+
+    const [review, setReview] = useState<string>("");
+    const [newReview, setNewReview] = useState("");
+    const [selectedTrackId, setSelectedTrackId] = useState<number | null>(null);
     
 
-
+    
 
     
     const formatDuration = (durationMs: number) => {
@@ -111,6 +115,7 @@ const App = () => {
             
         }
     }, [token]);
+    
     
     
     // Renderfunctie voor playlists
@@ -253,6 +258,7 @@ const App = () => {
     
         setTimeout(() => {
             if (!track.preview_url) {
+                console.log(track);
                 alert("No preview available for this track.");
             }
         }, 0);
@@ -483,12 +489,36 @@ const App = () => {
                 </div>
                 {token && trackIsClicked && (
                     <div
-                        className={`flex flex-col bg-gray-900 rounded-lg overflow-y-auto ${styles.scrollContainer}`}
-                        style={{ width: 440, minHeight: maxHeight, maxHeight: maxHeight }}
-                    >
-                        <h2 className="text-center text-white text-2xl font-semibold m-3">Song Information</h2>
-
+                    className={`flex flex-col bg-gray-900 rounded-lg overflow-y-auto ${styles.scrollContainer}`}
+                    style={{ width: 440, minHeight: maxHeight, maxHeight: maxHeight }}
+                >
+                    <h2 className="text-center text-white text-2xl font-semibold m-3">Song Reviews</h2>
+                    
+                    
+                        <div className="flex-grow">
+                           <h2>Hier komen reviews</h2>
+                        </div>
+                    
+                   
+                    
+                    {/* Het formulier wordt altijd onderaan geplaatst */}
+                    <div className="mt-auto">
+                        <form className="flex justify-center m-3">
+                            <input
+                                type="text"
+                                className="text-white bg-gray-800 rounded-l-full hover:bg-gray-700 p-2 w-96 outline-none focus:ring-2 focus:ring-gray-500"
+                                placeholder="Enter your review"
+                            />
+                            <button
+                                type="submit"
+                                className="bg-blue-500 border-4 border-blue-600 bg-opacity-80 border-opacity-60 rounded-r-full p-1"
+                            >
+                                Send
+                            </button>
+                        </form>
                     </div>
+                </div>
+                
                 )}
             </div>
 
