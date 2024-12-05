@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react"; 
 import Image from "next/image";
 import Logo from '@/app/Images/Logo.png';
 import { getSpotifyLoginUrl } from "@/app/apiClient"; // Importeer de functie
