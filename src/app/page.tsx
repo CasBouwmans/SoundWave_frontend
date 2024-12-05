@@ -16,7 +16,7 @@ import SearchArtistAlbumTrack from "@/components/SearchArtistAlbumTrack";
 import ArtistList from "@/components/ArtistList";
 import styles from "@/components/ScrollBar.module.css";
 
-import { fetchPlaylists, fetchPlaylistTracks, fetchAlbums, fetchAlbumTracks } from './apiClient';
+import { fetchPlaylists, fetchPlaylistTracks, fetchAlbums, fetchAlbumTracks, fetchTokens } from './apiClient';
 
 
 const App = () => {
@@ -67,36 +67,30 @@ const App = () => {
       };
     
     
-    useEffect(() => {
-        const hash = window.location.hash;
-        let token = window.localStorage.getItem("token");
-        const tokenExpiry = window.localStorage.getItem("tokenExpiry");
+      useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search); // Haal de query parameters uit de URL
+        const code = urlParams.get('code');  // Haal de waarde van de 'code' parameter op
     
-        // Check of de token is verlopen
-        if (tokenExpiry && new Date().getTime() > parseInt(tokenExpiry)) {
-            window.localStorage.removeItem("token");
-            window.localStorage.removeItem("tokenExpiry");
-            token = null; // Reset token als het verlopen is
-        }
     
-        if (!token && hash) {
-            const tokenFragment = hash
-                .substring(1)
-                .split("&")
-                .find((elem) => elem.startsWith("access_token"));
-    
-            if (tokenFragment) {
-                token = tokenFragment.split("=")[1];
-                const expiryTime = new Date().getTime() + 3600 * 1000; // 1 uur
-                window.localStorage.setItem("token", token);
-                window.localStorage.setItem("tokenExpiry", expiryTime.toString());
-                window.location.hash = "";
-                setToken(token);  // Stel token in na inloggen
-            }
-        } else if (token) {
-            setToken(token);  // Stel token in als deze aanwezig is
+        if (code) {
+            fetchTokens(code)
+                .then((data) => {
+                    if (data) {
+                        const { access_token, refresh_token } = data;
+                        const expiryTime = new Date().getTime() + 3600 * 1000; // 1 uur voor access token
+                        window.localStorage.setItem("token", access_token);
+                        window.localStorage.setItem("refresh_token", refresh_token);
+                        window.localStorage.setItem("tokenExpiry", expiryTime.toString());
+                        setToken(access_token); // Stel token in na inloggen
+                    }
+                })
+                .catch((error) => {
+                    console.error("Fout bij het ophalen van de tokens:", error);
+                });
         }
     }, []);
+    
+    
     
     useEffect(() => {
         if (token) {

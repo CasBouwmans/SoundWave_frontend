@@ -14,6 +14,7 @@ export default function Logout(
     setToken("")
     window.localStorage.removeItem("token")
     window.localStorage.removeItem("tokenExpiry")
+    window.localStorage.removeItem("refresh_token")
 }
 return (<div>
 {token && (

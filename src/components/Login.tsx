@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"; 
 import Image from "next/image";
 import Logo from '@/app/Images/Logo.png';
 import { getSpotifyLoginUrl } from "@/app/apiClient"; // Importeer de functie
@@ -7,6 +8,8 @@ interface LoginProps {
 }
 
 export default function Login({ token }: LoginProps) {
+
+
   return (
     <div>
       {!token || token === "" ? (
@@ -19,4 +22,6 @@ export default function Login({ token }: LoginProps) {
       ) : null}
     </div>
   );
+
+
 }
