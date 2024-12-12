@@ -241,7 +241,11 @@ const App = () => {
     
 
     const playTrack = (track: SpotifyTrack, index: number) => {
-        if (currentTrack && currentTrack.id === track.id) {
+        const trackId = track.id;  // Haal de trackId hier op
+    
+        console.log("Track ID:", trackId);  // Log de track id naar de console
+    
+        if (currentTrack && currentTrack.id === trackId) {
             togglePlayPause();
             return;
         }
@@ -260,6 +264,7 @@ const App = () => {
             }
         }, 0);
     };
+    
     
     // Functie om afspelen/pauzeren om te schakelen (niet meer gebruikt)
     const togglePlayPause = () => {

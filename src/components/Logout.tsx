@@ -15,6 +15,7 @@ export default function Logout(
     window.localStorage.removeItem("token")
     window.localStorage.removeItem("tokenExpiry")
     window.localStorage.removeItem("refresh_token")
+    window.localStorage.removeItem("spotifyUserId");
 }
 return (<div>
 {token && (
