@@ -14,7 +14,7 @@ const apiClient = axios.create({
 // apiClient.ts
 export const getSpotifyLoginUrl = (): string => {
     const CLIENT_ID = "a09667c15c22466f8ea2f0363cf98617";
-    const REDIRECT_URI = process.env.REDIRECT_URI;
+    const REDIRECT_URI = "http://localhost:3000";
     const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
     const RESPONSE_TYPE = "code";
     const SCOPES = 'user-read-private,user-read-email,playlist-read-private,playlist-read-collaborative';
@@ -27,15 +27,11 @@ export const getSpotifyLoginUrl = (): string => {
   export const fetchTokens = async (code: string) => {
     const CLIENT_ID = "a09667c15c22466f8ea2f0363cf98617";
     const CLIENT_SECRET = "b4ec5d61425a421c9d6a7f886b5457c0";
-    const REDIRECT_URI = process.env.REDIRECT_URI;  // Zorg ervoor dat dit overeenkomt met de URI die je in je app hebt ingesteld
+    const REDIRECT_URI = "http://localhost:3000";  // Zorg ervoor dat dit overeenkomt met de URI die je in je app hebt ingesteld
 
     const tokenEndpoint = "https://accounts.spotify.com/api/token";
 
     console.log(tokenEndpoint);
-
-    if(REDIRECT_URI == undefined) {
-      return;
-    }
 
     const params = new URLSearchParams();
     params.append("grant_type", "authorization_code");
