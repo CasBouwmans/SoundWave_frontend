@@ -57,6 +57,20 @@ export const getSpotifyLoginUrl = (): string => {
     }
 };
 
+export const fetchUserInfo = async (token: string) => {
+  try {
+    const { data } = await apiClient.get("/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return data.id;  // Dit is de Spotify User ID
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    throw error;
+  }
+};
+
   
   
 // Functie voor het ophalen van zoekresultaten

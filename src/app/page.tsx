@@ -16,7 +16,7 @@ import SearchArtistAlbumTrack from "@/components/SearchArtistAlbumTrack";
 import ArtistList from "@/components/ArtistList";
 import styles from "@/components/ScrollBar.module.css";
 
-import { fetchPlaylists, fetchPlaylistTracks, fetchAlbums, fetchAlbumTracks, fetchTokens } from './apiClient';
+import { fetchPlaylists, fetchPlaylistTracks, fetchAlbums, fetchAlbumTracks, fetchTokens, fetchUserInfo } from './apiClient';
 
 
 const App = () => {
@@ -71,10 +71,9 @@ const App = () => {
         const urlParams = new URLSearchParams(window.location.search); // Haal de query parameters uit de URL
         const code = urlParams.get('code');  // Haal de waarde van de 'code' parameter op
     
-    
         if (code) {
             fetchTokens(code)
-                .then((data) => {
+                .then(async (data) => {  // Merk op dat we hier de functie asynchroon maken
                     if (data) {
                         const { access_token, refresh_token } = data;
                         const expiryTime = new Date().getTime() + 3600 * 1000; // 1 uur voor access token
@@ -82,6 +81,12 @@ const App = () => {
                         window.localStorage.setItem("refresh_token", refresh_token);
                         window.localStorage.setItem("tokenExpiry", expiryTime.toString());
                         setToken(access_token); // Stel token in na inloggen
+    
+                        // Haal gebruikersinformatie op
+                        const userId = await fetchUserInfo(access_token);
+                        // Sla de userId op in localStorage of state
+                        window.localStorage.setItem('spotifyUserId', userId);
+                        console.log("Gebruiker ingelogd met ID:", userId);
                     }
                 })
                 .catch((error) => {
@@ -89,6 +94,7 @@ const App = () => {
                 });
         }
     }, []);
+    
     
     
     
