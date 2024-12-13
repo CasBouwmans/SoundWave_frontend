@@ -1,4 +1,5 @@
 "use client";
+import axios from 'axios';
 
 import React from "react";
 import { useState, useEffect } from "react";   
@@ -40,6 +41,12 @@ const App = () => {
     const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>([]);
     const [selectedPlaylist, setSelectedPlaylist] = useState<SpotifyPlaylist | null>(null);
     const [searchActive, setSearchActive] = useState(false);
+    const [userId, setUserId] = useState("");
+    const [reviewText, setReviewText] = useState("");
+    const [ratingNumber, setRatingNumber] = useState("");
+    const [reviews, setReviews] = useState([]); // Deze lijst kan je dynamisch bijwerken met reviews van de backend
+    const [trackId, setTrackId] = useState("");
+    
 
     
 
@@ -87,6 +94,7 @@ const App = () => {
                         // Sla de userId op in localStorage of state
                         window.localStorage.setItem('spotifyUserId', userId);
                         console.log("Gebruiker ingelogd met ID:", userId);
+                        setUserId(userId);
                     }
                 })
                 .catch((error) => {
@@ -244,6 +252,7 @@ const App = () => {
         const trackId = track.id;  // Haal de trackId hier op
     
         console.log("Track ID:", trackId);  // Log de track id naar de console
+        setTrackId(trackId);
     
         if (currentTrack && currentTrack.id === trackId) {
             togglePlayPause();
@@ -428,6 +437,56 @@ const App = () => {
         );
     };
 
+    const addReviewToBackend = async (
+        trackId: string,
+        reviewText: string,
+        userId: string,
+        rating: string,  // rating is nu een string
+        token: string
+    ) => {
+        try {
+            // Converteer de rating van string naar een number
+            const numericRating = parseInt(rating, 10);
+    
+            // Controleer of de conversie gelukt is (optioneel)
+            if (isNaN(numericRating)) {
+                console.error('Invalid rating');
+                return;
+            }
+    
+            const response = await axios.post(
+                "https://localhost:7283/api/reviews", // Dit is het endpoint van je backend voor het toevoegen van een review
+                {
+                    trackId,
+                    reviewText,
+                    userId,
+                    rating: numericRating, // Gebruik de numerieke rating
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Zorg ervoor dat de token wordt meegestuurd
+                    },
+                }
+            );
+            setRatingNumber("");
+            setReviewText(""); 
+    
+            console.log(response.data); // Of werk de state bij om de reviews te tonen
+        } catch (error) {
+            console.error("Error adding review:", error);
+        }
+    };
+    
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault(); // Voorkom dat de pagina opnieuw wordt geladen
+        await addReviewToBackend(trackId, reviewText, userId, ratingNumber.toString(), token); // Zet ratingNumber om naar string bij het aanroepen
+        console.log("Review is word aangemaakt: " + trackId, reviewText, userId, ratingNumber);
+    };
+    
+      
+      
+      
+    
     
 
     return (
@@ -464,8 +523,8 @@ const App = () => {
                 <div className="flex flex-col items-center justify-start ">
                     {token && (
                         <div
-                            className={`flex flex-wrap justify-center bg-gray-900 rounded-lg overflow-y-auto ${styles.scrollContainer}`}
-                            style={{ maxHeight: maxHeight }}
+                        className={`flex flex-wrap justify-center bg-gray-900 rounded-lg overflow-y-auto ${styles.scrollContainer} w-full sm:w-80 md:w-96`}
+                        style={{ maxHeight: maxHeight }}
                         >
                             {/* Toon tracks als er een album geselecteerd is */}
                             {selectedPlaylist && !searchActive ? (
@@ -489,6 +548,7 @@ const App = () => {
                         </div>
                     )}
                 </div>
+                
                 {token && trackIsClicked && (
                     <div
                     className={`flex flex-col bg-gray-900 rounded-lg overflow-y-auto ${styles.scrollContainer}`}
@@ -505,18 +565,29 @@ const App = () => {
                     
                     {/* Het formulier wordt altijd onderaan geplaatst */}
                     <div className="mt-auto">
-                        <form className="flex justify-center m-3">
-                            <input
-                                type="text"
-                                className="text-white bg-gray-800 rounded-l-full hover:bg-gray-700 p-2 w-96 outline-none focus:ring-2 focus:ring-gray-500"
-                                placeholder="Enter your review"
-                            />
-                            <button
-                                type="submit"
-                                className="bg-blue-500 border-4 border-blue-600 bg-opacity-80 border-opacity-60 rounded-r-full p-1"
-                            >
-                                Send
-                            </button>
+                        <form onSubmit={handleSubmit} className="flex justify-center m-3">
+                        <input
+                            type="number"
+                            className="text-white bg-gray-800 rounded-full hover:bg-gray-700 p-2 w-16 outline-none focus:ring-2 focus:ring-gray-500 mr-2"
+                            placeholder="Rating"
+                            value={ratingNumber}
+                            onChange={(e) => setRatingNumber(e.target.value)} 
+                            min="1" 
+                            max="5"
+                        />
+                        <input
+                            type="text"
+                            className="text-white bg-gray-800 rounded-l-full hover:bg-gray-700 p-2 w-96 outline-none focus:ring-2 focus:ring-gray-500"
+                            placeholder="Enter your review"
+                            value={reviewText}
+                            onChange={(e) => setReviewText(e.target.value)} // Update reviewText state
+                        />
+                        <button
+                            type="submit"
+                            className="bg-blue-500 border-4 border-blue-600 bg-opacity-80 border-opacity-60 rounded-r-full p-1"
+                        >
+                            Send
+                        </button>
                         </form>
                     </div>
                 </div>
