@@ -44,7 +44,6 @@ const App = () => {
     const [userId, setUserId] = useState("");
     const [reviewText, setReviewText] = useState("");
     const [ratingNumber, setRatingNumber] = useState("");
-    const [reviews, setReviews] = useState([]); // Deze lijst kan je dynamisch bijwerken met reviews van de backend
     const [trackId, setTrackId] = useState("");
     
 
