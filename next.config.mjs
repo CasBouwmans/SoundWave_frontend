@@ -1,8 +1,28 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    reactStrictMode: true,
     images: {
-        domains: ['i.scdn.co', 'mosaic.scdn.co', 'image-cdn-ak.spotifycdn.com', 'image-cdn-fa.spotifycdn.com', 'blend-playlist-covers.spotifycdn.com', 'playlist-read-private', 'user-library-read'], // Voeg hier je domeinen toe
+        domains: [
+            'i.scdn.co', 
+            'mosaic.scdn.co', 
+            'image-cdn-ak.spotifycdn.com', 
+            'image-cdn-fa.spotifycdn.com', 
+            'blend-playlist-covers.spotifycdn.com', 
+            'playlist-read-private', 
+            'user-library-read'
+        ],
+    },
+    webpack: (config) => {
+        config.resolve.alias['@'] = path.resolve(__dirname, 'src');
+        return config;
     },
 };
 
 export default nextConfig;
+

@@ -1,5 +1,6 @@
 import { SpotifyArtist, SpotifyAlbum, SpotifyTrack } from "@/interfaces/SpotifyInterfaces";
 import { searchSpotify } from "@/app/apiClient"; // Importeer de zoekfunctie uit je apiClient
+import React from 'react';
 
 interface SearchArtistAlbumTrackProps {
   token: string;
