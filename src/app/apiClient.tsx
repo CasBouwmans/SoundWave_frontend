@@ -191,6 +191,40 @@ export const fetchAlbumTracks = async (albumId: string, token: string) => {
         console.error("Error fetching tracks:", error);
         return []; // Retourneer een lege array bij een fout
     }
+
+};
+
+export const fetchReviewsFromTrack = async (trackId: string, token: string) => {
+  try {
+      const response = await axios.get(`https://localhost:7283/api/reviews/${trackId}`, {
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      });
+      return response.data; // Retourneer de reviews
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response && error.response.status === 404) {
+          // Als er geen reviews zijn, retourneer een lege array
+          return [];
+      }
+  }
+  console.error("Error fetching reviews:", error);
+  throw error;
+}
+};
+
+export const deleteReview = async (trackId: string, reviewId: string, token: string): Promise<void> => {
+  try {
+      await axios.delete(`https://localhost:7283/api/reviews/${trackId}/${reviewId}`, {
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      });
+  } catch (error) {
+      console.error("Error deleting review:", error);
+      throw error;
+  }
 };
   
 export default apiClient;

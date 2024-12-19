@@ -83,3 +83,9 @@ export interface SpotifyPlaylist {
     };
   }
   
+  export interface Review {
+    id: string;
+    userId: string;
+    reviewText: string;
+    rating: number;
+}
