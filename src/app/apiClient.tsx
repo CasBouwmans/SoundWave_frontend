@@ -10,15 +10,13 @@ const apiClient = axios.create({
   },
 });
 
-const REDIRECT_URI = process.env.NODE_ENV === 'production' 
-    ? process.env.REACT_APP_REDIRECT_URI_PRODUCTION || 'https://casbouwmans.github.io/SoundWave_frontend/'
-    : process.env.REACT_APP_REDIRECT_URI_DEVELOPMENT || 'http://localhost:3000';
 
 
 // apiClient.ts
 export const getSpotifyLoginUrl = (): string => {
     const CLIENT_ID = "a09667c15c22466f8ea2f0363cf98617";
     const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
+    const REDIRECT_URI = "http://localhost:3000";  // Het huidige URL
     const RESPONSE_TYPE = "code";
     const SCOPES = 'user-read-private,user-read-email,playlist-read-private,playlist-read-collaborative';
 
@@ -30,7 +28,7 @@ export const getSpotifyLoginUrl = (): string => {
   export const fetchTokens = async (code: string) => {
     const CLIENT_ID = "a09667c15c22466f8ea2f0363cf98617";
     const CLIENT_SECRET = "b4ec5d61425a421c9d6a7f886b5457c0";
-
+    const REDIRECT_URI = "http://localhost:3000";
     const tokenEndpoint = "https://accounts.spotify.com/api/token";
 
     console.log(tokenEndpoint);
