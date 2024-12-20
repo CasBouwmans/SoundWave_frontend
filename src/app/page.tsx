@@ -89,7 +89,9 @@ const App = () => {
                     pauseOnHover: true,
                     draggable: true,
                 });
-            } catch (error) {
+            } 
+            catch (error) {
+                console.error(error); // Log de fout naar de console
                 toast.error('Error deleting review.', {
                     position: "bottom-left",
                     autoClose: 3000, // sluit na 3 seconden
@@ -581,9 +583,6 @@ const App = () => {
             });
             setHasError(true);
         }
-    
-        // Zet ratingNumber om naar een nummer
-        const numericRating = parseFloat(ratingNumber);
     
         // Als er een fout is, verlaat de functie
         if (hasError) {
