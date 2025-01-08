@@ -265,22 +265,22 @@ const App = () => {
         );
     };
 
-    const getRatingText = (rating: number): string => {
-        switch (rating) {
-            case 1:
-                return 'Poor';
-            case 2:
-                return 'Fair';
-            case 3:
-                return 'Good';
-            case 4:
-                return 'Great';
-            case 5:
-                return 'Excellent';
-            default:
-                return 'Unknown';
-        }
-    };
+    // const getRatingText = (rating: number): string => {
+    //     switch (rating) {
+    //         case 1:
+    //             return 'Poor';
+    //         case 2:
+    //             return 'Fair';
+    //         case 3:
+    //             return 'Good';
+    //         case 4:
+    //             return 'Great';
+    //         case 5:
+    //             return 'Excellent';
+    //         default:
+    //             return 'Unknown';
+    //     }
+    // };
 
     const renderReviews = () => {
 
@@ -289,7 +289,7 @@ const App = () => {
             return reviews.map((review) => (
                 <div key={review.id} className="review hover:bg-gray-700 bg-gray-800 m-3 rounded-md p-2">
                     <p>{review.userId}: {review.reviewText}</p>
-                    <p>Rating: {getRatingText(review.rating)}</p>
+                    <p>Rating: {review.rating} / 5</p>
                     <button onClick={() => handleDeleteReview(review.id)} className="text-red-500">Delete</button>
                 </div>
 
