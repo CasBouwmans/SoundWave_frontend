@@ -196,7 +196,7 @@ export const fetchAlbumTracks = async (albumId: string, token: string) => {
 
 export const fetchReviewsFromTrack = async (trackId: string, token: string) => {
   try {
-      const response = await axios.get(`https://localhost:7283/api/reviews/${trackId}`, {
+      const response = await axios.get(`http://localhost:8080/api/reviews/${trackId}`, {
           headers: {
               Authorization: `Bearer ${token}`,
           },
@@ -216,7 +216,7 @@ export const fetchReviewsFromTrack = async (trackId: string, token: string) => {
 
 export const deleteReview = async (trackId: string, reviewId: string, token: string): Promise<void> => {
   try {
-      await axios.delete(`https://localhost:7283/api/reviews/${trackId}/${reviewId}`, {
+      await axios.delete(`http://localhost:8080/api/reviews/${trackId}/${reviewId}`, {
           headers: {
               Authorization: `Bearer ${token}`,
           },

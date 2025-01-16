@@ -544,7 +544,7 @@ const App = () => {
             setRatingNumber("");
             setReviewText("");
             const response = await axios.post(
-                "https://localhost:7283/api/reviews", // Dit is het endpoint van je backend voor het toevoegen van een review
+                `http://localhost:8080/api/reviews`, // Dit is het endpoint van je backend voor het toevoegen van een review
                 {
                     trackId,
                     reviewText,
