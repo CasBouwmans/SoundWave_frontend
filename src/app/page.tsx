@@ -34,7 +34,6 @@ const App = () => {
     const [selectedAlbum, setSelectedAlbum] = useState<SpotifyAlbum | null>(null);
     const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
     const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null>(null);
-    // const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false); // Voeg deze regel toe
     const [trackIsClicked, setTrackIsClicked] = useState(false);
     const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(-1); // -1 betekent dat er nog geen track is geselecteerd
