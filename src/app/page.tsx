@@ -114,7 +114,7 @@ const App = () => {
             const data = await fetchTokens(code);
             if (data) {
                 const { access_token, refresh_token } = data;
-                const expiryTime = new Date().getTime() + 3600 * 1000;
+               
                 window.localStorage.setItem("token", access_token);
                 window.localStorage.setItem("refresh_token", refresh_token);
                 setToken(access_token);
@@ -159,7 +159,7 @@ const App = () => {
         if (token) {
             getReviews();
         }
-    }, [currentTrack, token]);
+    }, [currentTrack, token,]);
 
     const fetchAndSetReviews = async (trackId: string, token: string) => {
         try {
@@ -173,13 +173,11 @@ const App = () => {
     
     const getReviews = async () => {
         if (currentTrack) {
-            try {
+            
                 setReviews([]); // Maak de reviews leeg wanneer de track verandert
                 const reviewsData = await fetchAndSetReviews(currentTrack.id, token);
                 setReviews(reviewsData);
-            } catch (error) {
-                // Error wordt al gelogd in de fetchAndSetReviews functie
-            }
+           
         }
     };
     
