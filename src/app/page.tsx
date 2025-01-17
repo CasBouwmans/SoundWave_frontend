@@ -399,6 +399,16 @@ const App = () => {
     };
 
 
+    const renderContent = () => {
+        if (selectedPlaylist && !searchActive) return renderPlaylistTracks();
+        if (selectedAlbum) return renderAlbumTracks();
+        if (selectedArtist) return renderAlbums();
+        if (searchChoice === "artist") return renderSearchedArtists();
+        if (searchChoice === "album") return renderSearchedAlbums();
+        if (searchChoice === "track") return renderSearchedTracks();
+        return <div>No results found</div>;
+    };
+    
 
 
 
@@ -647,34 +657,21 @@ const App = () => {
                     </div>
                 )}
 
-                <div className="flex flex-col items-center justify-start ">
+
+                <div className="flex flex-col items-center justify-start">
                     {token && (
                         <div
                             className={`flex flex-wrap justify-center bg-gray-900 rounded-lg overflow-y-auto ${styles.scrollContainer} w-full sm:w-80 md:w-96`}
                             style={{ maxHeight: maxHeight }}
                         >
-                            {/* Toon tracks als er een album geselecteerd is */}
-                            {selectedPlaylist && !searchActive ? (
-                                renderPlaylistTracks()
-                            ) : selectedAlbum ? (
-                                renderAlbumTracks()
-                            ) : selectedArtist ? (
-                                /* Toon albums als er een artiest geselecteerd is */
-                                renderAlbums()
-                            ) : searchChoice === "artist" ? (
-                                /* Toon artiesten als er geen artiest en geen album geselecteerd is */
-                                renderSearchedArtists()
-                            ) : searchChoice === "album" ? (
-                                renderSearchedAlbums()
-                            ) : searchChoice === "track" ? (
-                                renderSearchedTracks()
-                            ) : (
-                                // Als er geen specifieke keuze is, toon iets anders of een fallback
-                                <div>No results found</div>
-                            )}
+                            {renderContent()}
                         </div>
                     )}
+                    <div className="rounded-full bg-white cursor-pointer p-2 hover:scale-105" 
+                        onClick={isPlaying ? togglePlayPause : () => playTrack(currentTrack!, currentTrackIndex!)}>
+                    </div>
                 </div>
+
 
                 {token && trackIsClicked && (
                     <div
