@@ -77,77 +77,81 @@ const App = () => {
     };
 
     const handleDeleteReview = async (reviewId: string) => {
+        await deleteReviewData(reviewId); // Nieuwe functie aanroepen
+    };
+    
+    // Functie voor verwijderen van een review
+    const deleteReviewData = async (reviewId: string) => {
         if (currentTrack) {
             try {
                 await deleteReview(currentTrack.id, reviewId, token);
-                await getReviews(); // Haal de reviews opnieuw op na het verwijderen van een review
-                toast.success('Review deleted successfully.', {
-                    position: "bottom-left",
-                    autoClose: 3000, // sluit na 3 seconden
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-            } 
-            catch (error) {
-                console.error(error); // Log de fout naar de console
-                toast.error('Error deleting review.', {
-                    position: "bottom-left",
-                    autoClose: 3000, // sluit na 3 seconden
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
+                await getReviewsData(); // Haal de reviews opnieuw op
+            } catch (error) {
+                console.error(error);
+                toast.error('Error deleting review.', { position: "bottom-left" });
             }
         }
     };
 
+    // Functie om reviews op te halen
+    const getReviewsData = async () => {
+        if (currentTrack) {
+            try {
+                setReviews([]); // Maak reviews leeg
+                const reviewsData = await fetchReviewsFromTrack(currentTrack.id, token);
+                setReviews(reviewsData);
+            } catch (error) {
+                console.error("Error fetching reviews:", error);
+            }
+        }
+    };
+
+
+    
+
+    const fetchTokenData = async (code: string) => {
+        try {
+            const data = await fetchTokens(code);
+            if (data) {
+                const { access_token, refresh_token } = data;
+                const expiryTime = new Date().getTime() + 3600 * 1000;
+                window.localStorage.setItem("token", access_token);
+                window.localStorage.setItem("refresh_token", refresh_token);
+                setToken(access_token);
+    
+                const userId = await fetchUserInfo(access_token);
+                window.localStorage.setItem('spotifyUserId', userId);
+                setUserId(userId);
+            }
+        } catch (error) {
+            console.error("Error fetching tokens:", error);
+        }
+    };
+    
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search); // Haal de query parameters uit de URL
-        const code = urlParams.get('code');  // Haal de waarde van de 'code' parameter op
-
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
         if (code) {
-            fetchTokens(code)
-                .then(async (data) => {  // Merk op dat we hier de functie asynchroon maken
-                    if (data) {
-                        const { access_token, refresh_token } = data;
-                        const expiryTime = new Date().getTime() + 3600 * 1000; // 1 uur voor access token
-                        window.localStorage.setItem("token", access_token);
-                        window.localStorage.setItem("refresh_token", refresh_token);
-                        window.localStorage.setItem("tokenExpiry", expiryTime.toString());
-                        setToken(access_token); // Stel token in na inloggen
-
-                        // Haal gebruikersinformatie op
-                        const userId = await fetchUserInfo(access_token);
-                        // Sla de userId op in localStorage of state
-                        window.localStorage.setItem('spotifyUserId', userId);
-                        console.log("Gebruiker ingelogd met ID:", userId);
-                        setUserId(userId);
-                    }
-                })
-                .catch((error) => {
-                    console.error("Fout bij het ophalen van de tokens:", error);
-                });
+            fetchTokenData(code); // Aanroepen van de aparte functie
         }
     }, []);
+    
 
 
 
 
+    const fetchPlaylistsData = async (token: string) => {
+        try {
+            const data = await fetchPlaylists(token);
+            setPlaylists(data);
+        } catch (error) {
+            console.error("Error fetching playlists:", error);
+        }
+    };
+    
     useEffect(() => {
         if (token) {
-            const getPlaylists = async () => {
-                try {
-                    const data = await fetchPlaylists(token);
-                    setPlaylists(data); // Sla de playlists op in de state
-                } catch (error) {
-                    console.error('Error fetching playlists:', error);
-                }
-            };
-            getPlaylists();
-
+            fetchPlaylistsData(token);
         }
     }, [token]);
 
@@ -157,17 +161,28 @@ const App = () => {
         }
     }, [currentTrack, token]);
 
+    const fetchAndSetReviews = async (trackId: string, token: string) => {
+        try {
+            const reviewsData: Review[] = await fetchReviewsFromTrack(trackId, token);
+            return reviewsData;
+        } catch (error) {
+            console.error("Error fetching reviews:", error);
+            throw error;
+        }
+    };
+    
     const getReviews = async () => {
         if (currentTrack) {
             try {
                 setReviews([]); // Maak de reviews leeg wanneer de track verandert
-                const reviewsData: Review[] = await fetchReviewsFromTrack(currentTrack.id, token);
+                const reviewsData = await fetchAndSetReviews(currentTrack.id, token);
                 setReviews(reviewsData);
             } catch (error) {
-                console.error("Error fetching reviews:", error);
+                // Error wordt al gelogd in de fetchAndSetReviews functie
             }
         }
     };
+    
 
     // Renderfunctie voor playlists
     const renderPlaylists = () => {
